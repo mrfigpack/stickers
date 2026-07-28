@@ -124,13 +124,15 @@ const state = { filter: "todos", query: "", activePackId: "combo-completo" };
 const packPreviews = {
   "respostas-impertinentes": [
     "previews/respostas-01.gif?v=20260719-18",
-    "previews/respostas-02.gif?v=20260719-18",
+    "previews/respostas-09.gif?v=20260719-18",
     "previews/respostas-03.gif?v=20260719-18",
     "previews/respostas-04.gif?v=20260719-18",
     "previews/respostas-05.gif?v=20260719-18",
     "previews/respostas-06.gif?v=20260719-18",
     "previews/respostas-07.gif?v=20260719-18",
-    "previews/respostas-08.gif?v=20260719-18"
+    "previews/respostas-08.gif?v=20260719-18",
+    "previews/respostas-02.gif?v=20260719-18"
+
   ],
   proibido: [
     "previews/proibido-01.gif?v=20260719-18",
