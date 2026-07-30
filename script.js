@@ -173,7 +173,25 @@ const tabs = document.querySelector("#detail-tabs");
 const panelHost = document.querySelector("#detail-panel-host");
 const search = document.querySelector("#pack-search");
 const filterButtons = [...document.querySelectorAll("[data-filter]")];
+const whatsappFloat = document.querySelector(".whatsapp-float");
+const packsSection = document.querySelector("#packs");
 let detailPreviewTimer = null;
+
+if (whatsappFloat && packsSection) {
+  const updateWhatsappVisibility = () => {
+    const packsPosition = packsSection.getBoundingClientRect().top;
+    whatsappFloat.classList.toggle("is-visible", packsPosition <= window.innerHeight);
+  };
+
+  if ("IntersectionObserver" in window) {
+    const packsObserver = new IntersectionObserver(() => updateWhatsappVisibility(), { threshold: 0 });
+    packsObserver.observe(packsSection);
+  }
+
+  window.addEventListener("scroll", updateWhatsappVisibility, { passive: true });
+  window.addEventListener("resize", updateWhatsappVisibility);
+  updateWhatsappVisibility();
+}
 
 function renderCatalogPreviewCarousel() {
   const carouselEntries = packs.flatMap((pack) => {

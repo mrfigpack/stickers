@@ -1309,3 +1309,55 @@ footer { border-top-color:rgba(255,51,76,.3); }
   .marquee .marquee-track { animation:none; }
   .marquee { overflow-x:auto; }
 }
+
+/* Compra em destaque e WhatsApp somente na vitrine de packs */
+.buy-button {
+  min-height:52px;
+  padding-inline:22px;
+  font-size:13px;
+  letter-spacing:.15px;
+}
+.detail-buy-row .button.primary {
+  min-height:52px;
+  padding-inline:25px;
+  font-size:13px;
+}
+.whatsapp-float {
+  visibility:hidden;
+  opacity:0;
+  pointer-events:none;
+  transform:translateY(20px);
+  transition:opacity .22s ease,transform .22s ease,visibility .22s ease,background .18s ease,box-shadow .18s ease;
+}
+.whatsapp-float.is-visible {
+  display:inline-flex;
+  visibility:visible;
+  opacity:1;
+  pointer-events:auto;
+  transform:translateY(0);
+}
+@media (max-width:680px) {
+  .buy-button {
+    min-height:42px;
+    padding-inline:14px;
+    font-size:10px;
+  }
+  .detail-buy-row .button.primary {
+    min-height:46px;
+    padding-inline:16px;
+    font-size:11px;
+  }
+  .whatsapp-float.is-visible { display:flex; }
+}
+
+@media (max-width:680px) {
+  .whatsapp-float.is-visible {
+    display:flex!important;
+    position:fixed!important;
+    z-index:999!important;
+    visibility:visible!important;
+    opacity:1!important;
+    pointer-events:auto!important;
+    transform:translate3d(0,0,0)!important;
+  }
+}
