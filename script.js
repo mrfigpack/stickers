@@ -6,7 +6,7 @@ const packs = [
     count: "+800",
     price: "R$ 19,99",
     image: "packs/combo.png",
-    buy: "https://mpago.la/2EHo5Nx",
+    buy: "https://mpago.la/2SVyKpG",
     description: "Todos os packs da Mr FigPack em um único combo.",
     badge: "Mais vendido",
     details: {
@@ -23,7 +23,7 @@ const packs = [
     count: "+500",
     price: "R$ 14,90",
     image: "packs/respostas.png",
-    buy: "https://mpago.la/1puUF7X",
+    buy: "https://mpago.la/1gspLAS",
     description: "Respostas atravessadas, ironia e deboche para qualquer conversa.",
     badge: "Favorito",
     details: {
@@ -40,7 +40,7 @@ const packs = [
     count: "+120",
     price: "R$ 14,90",
     image: "packs/proibido.png",
-    buy: "https://mpago.la/2PWYqPz",
+    buy: "https://mpago.la/2uNGY91",
     description: "Figurinhas sem filtro para os grupos mais íntimos.",
     badge: "+18",
     details: {
