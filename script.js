@@ -120,6 +120,7 @@ const packs = [
   }
 ];
 
+const PAYMENT = { pixKey: "poupaamigo@gmail.com", whatsapp: "558892910298" };
 const state = { filter: "todos", query: "", activePackId: "combo-completo" };
 const packPreviews = {
   "respostas-impertinentes": [
@@ -246,9 +247,9 @@ function renderCatalog() {
         <p>${pack.description}</p>
         <div class="product-bottom">
           <span class="product-price">${pack.price}</span>
-          <a class="buy-button" href="${pack.buy}" target="_blank" rel="noopener noreferrer">Comprar</a>
+          <div class="pack-payment-actions">${paymentActions(pack)}</div>
         </div>
-        <small class="buy-reassurance"><i class="bi bi-shield-check" aria-hidden="true"></i> Mercado Pago &middot; pagamento &uacute;nico &middot; acesso vital&iacute;cio</small>
+        <small class="buy-reassurance"><i class="bi bi-shield-check" aria-hidden="true"></i> Mercado Pago ou Pix &middot; pagamento &uacute;nico</small>
         <button class="details-link" type="button" data-pack-id="${pack.id}">Ver detalhes do pack <span aria-hidden="true"><i class="bi bi-chevron-down"></i></span></button>
       </div>
     </article>
@@ -308,7 +309,7 @@ function renderPanel() {
         <div class="detail-note"><span aria-hidden="true"><i class="bi bi-info-circle-fill"></i></span><p>${pack.details.note}</p></div>
         <div class="detail-buy-row">
           <div class="price"><small>Pack completo por</small><strong>${pack.price}</strong></div>
-          <a class="button primary" href="${pack.buy}" target="_blank" rel="noopener noreferrer">Comprar agora <span><i class="bi bi-arrow-up-right" aria-hidden="true"></i></span></a>
+          <div class="pack-payment-actions">${paymentActions(pack)}</div>
         </div>
         <small class="delivery-copy">Ap&oacute;s a compra, voc&ecirc; receber&aacute; as instru&ccedil;&otilde;es por e-mail. Se preferir, envie o comprovante pelo Instagram ou TikTok.</small>
       </div>
@@ -475,3 +476,44 @@ if (feedbackToast) {
 
   nextFeedbackTimer = window.setTimeout(showFeedback, 1200);
 }
+
+
+function whatsappLink(pack, paid = false) {
+  const message = paid
+    ? `Olá! Paguei ${pack.price} por Pix e gostaria de receber o pack ${pack.name}. Vou enviar meu comprovante.`
+    : `Olá! Gostaria de adquirir o pack ${pack.name}, por ${pack.price}.`;
+  return `https://wa.me/${PAYMENT.whatsapp}?text=${encodeURIComponent(message)}`;
+}
+function paymentActions(pack) {
+  return `<a class="pix-button" href="#pagamento" data-pix-pack="${pack.id}" aria-label="Pagar ${pack.name} por Pix">Pix</a>
+    <a class="buy-button" href="${pack.buy}" target="_blank" rel="noopener noreferrer">Mercado Pago ↗</a>
+    <a class="pack-whatsapp-button" href="${whatsappLink(pack)}" target="_blank" rel="noopener noreferrer">WhatsApp</a>`;
+}
+function selectPaymentPack(id) {
+  const pack = packs.find(item => item.id === id) || packs[0];
+  document.querySelector('#pix-pack').value = pack.id;
+  document.querySelector('#pix-price').textContent = pack.price;
+  document.querySelector('#pix-key').value = PAYMENT.pixKey;
+  document.querySelector('#pix-receipt').href = whatsappLink(pack, true);
+  document.querySelector('#payment-mp').href = pack.buy;
+  document.querySelector('#payment-whatsapp').href = whatsappLink(pack);
+  document.querySelector('#pix-status').textContent = 'Após pagar, envie o comprovante no WhatsApp. No atendimento, escolha 1 (já comprei).';
+}
+document.querySelector('#pix-pack').innerHTML = packs.map(pack => `<option value="${pack.id}">${pack.name}</option>`).join('');
+document.querySelector('#pix-pack').addEventListener('change', event => selectPaymentPack(event.target.value));
+document.addEventListener('click', event => {
+  const trigger = event.target.closest('[data-pix-pack]');
+  if (trigger) selectPaymentPack(trigger.dataset.pixPack);
+});
+document.querySelector('#copy-pix').addEventListener('click', async () => {
+  const status = document.querySelector('#pix-status');
+  try {
+    await navigator.clipboard.writeText(PAYMENT.pixKey);
+    status.textContent = 'Chave Pix copiada! Pague o valor indicado e envie o comprovante no WhatsApp.';
+  } catch {
+    const input = document.querySelector('#pix-key');
+    input.focus(); input.select();
+    status.textContent = 'Selecione e copie a chave acima para pagar no aplicativo do seu banco.';
+  }
+});
+selectPaymentPack(packs[0].id);
