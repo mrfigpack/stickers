@@ -1,3 +1,36 @@
+const DELIVERY_ORIGIN = "https://srv2030058.hstgr.cloud";
+const DELIVERY_PRODUCTS = { "combo-completo": "combo", "respostas-impertinentes": "respostas", "proibido": "proibido", "musicas": "musicas", "animezando": "animezando", "politicando": "politicando", "cantadas": "cantadas" };
+let onlineProducts = new Map();
+let onlineLoaded = false;
+let onlineUnavailable = false;
+function deliveryReady(pack) { return onlineProducts.get(DELIVERY_PRODUCTS[pack.id])?.available === true; }
+function deliveryLink(pack) { return `${DELIVERY_ORIGIN}/?pack=${encodeURIComponent(onlineProducts.get(DELIVERY_PRODUCTS[pack.id])?.id || DELIVERY_PRODUCTS[pack.id])}`; }
+function purchaseButton(pack, className = 'buy-button', label = 'Comprar e receber') {
+  return deliveryReady(pack)
+    ? `<a class="${className}" href="${deliveryLink(pack)}" rel="noopener">${label} <i class="bi bi-arrow-up-right" aria-hidden="true"></i></a>`
+    : `<span class="${className} delivery-unavailable" aria-disabled="true">${!onlineLoaded ? 'Carregando...' : onlineUnavailable ? 'Indisponível agora' : 'Em preparação'}</span>`;
+}
+function supportLink(pack) { return 'https://wa.me/558892910298?text=' + encodeURIComponent('Olá! Preciso de ajuda com o pack ' + pack.name + '.'); }
+async function loadDeliveryCatalog() {
+  try {
+    const response = await fetch(DELIVERY_ORIGIN + '/api/catalog', { cache: 'no-store', signal: AbortSignal.timeout(10000) });
+    if (!response.ok) throw new Error('Catálogo indisponível');
+    const data = await response.json(); if (!Array.isArray(data.products)) throw new Error('Catálogo inválido');
+    for (const product of data.products) {
+      if (typeof product.id !== 'string' || typeof product.available !== 'boolean' || !Number.isSafeInteger(product.amountCents) || product.amountCents < 1) continue;
+      const metadata = { id: product.id, available: product.available, amountCents: product.amountCents };
+      onlineProducts.set(product.id, metadata);
+      if (typeof product.storeId === 'string') onlineProducts.set(product.storeId, metadata);
+    }
+    // The amount displayed must match the amount that will be charged on the server.
+    for (const pack of packs) { const product = onlineProducts.get(DELIVERY_PRODUCTS[pack.id]); if (product?.available) pack.price = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(product.amountCents / 100); }
+  } catch { onlineUnavailable = true; }
+  onlineLoaded = true; renderCatalog(); renderPanel();
+  const combo = packs.find(pack => pack.id === 'combo-completo');
+  document.querySelector('#online-combo-action').innerHTML = purchaseButton(combo, 'button dark', 'Quero o Combo Completo');
+  const price = document.querySelector('#online-combo-price'); if (price) price.textContent = combo.price;
+  document.querySelector('#delivery-store-status').textContent = onlineUnavailable ? 'As compras estão temporariamente indisponíveis. Tente novamente em alguns instantes.' : 'Escolha seu pack, confirme seu email e pague com Pix ou cartão. Receba o acesso na conversa e por email após a confirmação.' + (packs.some(pack => !deliveryReady(pack)) ? ' Alguns packs estarão disponíveis em breve.' : '');
+}
 const packs = [
   {
     id: "combo-completo",
@@ -13,7 +46,7 @@ const packs = [
       title: "Todos os packs em uma só coleção.",
       intro: "O pacote mais completo da Mr FigPack, feito para quem quer ter uma resposta pronta para qualquer conversa.",
       highlights: ["Dandadan e animes em geral", "Respostas Impertinentes", "Blue Lock, Gojo e Sukuna", "Humor, memes e reações"],
-      note: "Acesso vitalício ao conteúdo comprado, com pagamento feito uma única vez."
+      note: "Pagamento único. Abra os canais e adicione os packs ao seu WhatsApp."
     }
   },
   {
@@ -81,7 +114,7 @@ const packs = [
       title: "Memes de anime para qualquer batalha.",
       intro: "Figurinhas aleatórias de vários animes e de cenas que viraram meme, reunidas no estilo otaku zueiro da Mr FigPack.",
       highlights: ["Vários universos de anime", "Cenas que viraram meme", "Reações otaku", "Mais de 100 figurinhas"],
-      note: "Acesso vitalício e pagamento único, como nos packs originais da coleção."
+      note: "Pagamento único. Adicione as figurinhas ao seu WhatsApp para guardá-las."
     }
   },
   {
@@ -98,7 +131,7 @@ const packs = [
       title: "A zoeira política atravessa eleições.",
       intro: "Uma coleção de memes políticos para comentar notícias, debates e aquela discussão inevitável do grupo.",
       highlights: ["Memes políticos", "Reações para debates", "Humor para o grupo", "Mais de 25 figurinhas"],
-      note: "Acesso vitalício ao pack após a confirmação do pagamento."
+      note: "Canal liberado na página da compra após a confirmação do pagamento."
     }
   },
   {
@@ -120,7 +153,6 @@ const packs = [
   }
 ];
 
-const PAYMENT = { pixKey: "poupaamigo@gmail.com", whatsapp: "558892910298" };
 const state = { filter: "todos", query: "", activePackId: "combo-completo" };
 const packPreviews = {
   "respostas-impertinentes": [
@@ -247,9 +279,10 @@ function renderCatalog() {
         <p>${pack.description}</p>
         <div class="product-bottom">
           <span class="product-price">${pack.price}</span>
-          <div class="pack-payment-actions">${paymentActions(pack)}</div>
+          ${purchaseButton(pack)}
         </div>
-        <small class="buy-reassurance"><i class="bi bi-shield-check" aria-hidden="true"></i> Mercado Pago ou Pix &middot; pagamento &uacute;nico</small>
+        <small class="buy-reassurance"><i class="bi bi-shield-check" aria-hidden="true"></i> ${deliveryReady(pack) ? "Pix ou cartão &middot; entrega na página" : "Entrega online em preparação"}</small>
+        <a class="pack-support" href="${supportLink(pack)}" target="_blank" rel="noopener noreferrer">Preciso de ajuda no WhatsApp</a>
         <button class="details-link" type="button" data-pack-id="${pack.id}">Ver detalhes do pack <span aria-hidden="true"><i class="bi bi-chevron-down"></i></span></button>
       </div>
     </article>
@@ -309,9 +342,9 @@ function renderPanel() {
         <div class="detail-note"><span aria-hidden="true"><i class="bi bi-info-circle-fill"></i></span><p>${pack.details.note}</p></div>
         <div class="detail-buy-row">
           <div class="price"><small>Pack completo por</small><strong>${pack.price}</strong></div>
-          <div class="pack-payment-actions">${paymentActions(pack)}</div>
+          ${purchaseButton(pack, "button primary")}
         </div>
-        <small class="delivery-copy">Ap&oacute;s a compra, voc&ecirc; receber&aacute; as instru&ccedil;&otilde;es por e-mail. Se preferir, envie o comprovante pelo Instagram ou TikTok.</small>
+        <small class="delivery-copy">Após a confirmação do pagamento, volte à página da compra para abrir seu canal. Guarde o link ou acesse “Minhas entregas” no mesmo navegador.</small>
       </div>
     </article>
   `;
@@ -418,11 +451,11 @@ renderTabs();
 renderPanel();
 
 const purchaseNotices = [
-  { pack: "Entrega por e-mail", copy: "Faça o pagamento e receba as instruções no e-mail informado.", accent: "#ff334c" },
-  { pack: "Pagamento único", copy: "Sem mensalidade: compre uma vez e tenha acesso vitalício.", accent: "#f7f7f7" },
+  { pack: "Entrega na página", copy: "Pague e abra o canal liberado na página da sua compra.", accent: "#ff334c" },
+  { pack: "Pagamento único", copy: "Sem mensalidade. Adicione os packs ao seu WhatsApp.", accent: "#f7f7f7" },
   { pack: "Compra protegida", copy: "O pagamento é processado com segurança pelo Mercado Pago.", accent: "#ff334c" },
   { pack: "Confira sua caixa de entrada", copy: "Após a compra, verifique também as pastas de spam e promoções.", accent: "#f7f7f7" },
-  { pack: "Precisa de ajuda?", copy: "Envie o comprovante pelo Instagram ou TikTok para receber suporte.", accent: "#ff334c" }
+  { pack: "Precisa de ajuda?", copy: "Fale pelo WhatsApp para tirar dúvidas ou pedir suporte.", accent: "#ff334c" }
 ];
 
 const feedbackToast = document.querySelector("#feedback-toast");
@@ -477,43 +510,4 @@ if (feedbackToast) {
   nextFeedbackTimer = window.setTimeout(showFeedback, 1200);
 }
 
-
-function whatsappLink(pack, paid = false) {
-  const message = paid
-    ? `Olá! Paguei ${pack.price} por Pix e gostaria de receber o pack ${pack.name}. Vou enviar meu comprovante.`
-    : `Olá! Gostaria de adquirir o pack ${pack.name}, por ${pack.price}.`;
-  return `https://wa.me/${PAYMENT.whatsapp}?text=${encodeURIComponent(message)}`;
-}
-function paymentActions(pack) {
-  return `<a class="pix-button" href="#pagamento" data-pix-pack="${pack.id}" aria-label="Pagar ${pack.name} por Pix">Pix</a>
-    <a class="buy-button" href="${pack.buy}" target="_blank" rel="noopener noreferrer">Mercado Pago ↗</a>
-    <a class="pack-whatsapp-button" href="${whatsappLink(pack)}" target="_blank" rel="noopener noreferrer">WhatsApp</a>`;
-}
-function selectPaymentPack(id) {
-  const pack = packs.find(item => item.id === id) || packs[0];
-  document.querySelector('#pix-pack').value = pack.id;
-  document.querySelector('#pix-price').textContent = pack.price;
-  document.querySelector('#pix-key').value = PAYMENT.pixKey;
-  document.querySelector('#pix-receipt').href = whatsappLink(pack, true);
-  document.querySelector('#payment-mp').href = pack.buy;
-  document.querySelector('#payment-whatsapp').href = whatsappLink(pack);
-  document.querySelector('#pix-status').textContent = 'Após pagar, envie o comprovante no WhatsApp. No atendimento, escolha 1 (já comprei).';
-}
-document.querySelector('#pix-pack').innerHTML = packs.map(pack => `<option value="${pack.id}">${pack.name}</option>`).join('');
-document.querySelector('#pix-pack').addEventListener('change', event => selectPaymentPack(event.target.value));
-document.addEventListener('click', event => {
-  const trigger = event.target.closest('[data-pix-pack]');
-  if (trigger) selectPaymentPack(trigger.dataset.pixPack);
-});
-document.querySelector('#copy-pix').addEventListener('click', async () => {
-  const status = document.querySelector('#pix-status');
-  try {
-    await navigator.clipboard.writeText(PAYMENT.pixKey);
-    status.textContent = 'Chave Pix copiada! Pague o valor indicado e envie o comprovante no WhatsApp.';
-  } catch {
-    const input = document.querySelector('#pix-key');
-    input.focus(); input.select();
-    status.textContent = 'Selecione e copie a chave acima para pagar no aplicativo do seu banco.';
-  }
-});
-selectPaymentPack(packs[0].id);
+loadDeliveryCatalog();

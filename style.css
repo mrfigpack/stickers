@@ -1362,31 +1362,13 @@ footer { border-top-color:rgba(255,51,76,.3); }
   }
 }
 
-/* Pagamento por pack, mantendo os links originais do Mercado Pago. */
-.pack-payment-actions { display:flex; flex-wrap:wrap; gap:8px; width:100%; }
-.pack-payment-actions a { display:inline-flex; justify-content:center; align-items:center; border-radius:12px; padding:12px 10px; min-height:44px; font-size:12px; font-weight:800; text-align:center; }
-.pack-payment-actions .buy-button { flex:1 1 130px; }
-.pix-button { background:var(--yellow); color:#11110f; border:1px solid var(--ink); border-radius:12px; padding:12px 16px; font-weight:800; cursor:pointer; }
-.pack-whatsapp-button { background:var(--paper); border:1px solid var(--ink); }
-.product-bottom { flex-wrap:wrap; gap:14px; }
-.detail-buy-row { flex-wrap:wrap; gap:16px; }
-.payment-section { padding:70px 6vw; scroll-margin-top:100px; }
-.payment-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:20px; margin-top:35px; align-items:start; }
-.payment-card { background:var(--paper); border:1px solid var(--line); border-radius:20px; padding:26px; min-width:0; }
-.payment-number { display:inline-grid; place-items:center; width:38px; height:38px; border-radius:50%; background:var(--yellow); font-weight:900; }
-.payment-card h3 { font-size:21px; margin:20px 0 12px; }
-.payment-card p { font-size:14px; line-height:1.6; }
-.payment-card .button { width:100%; text-align:center; justify-content:center; margin-top:12px; padding:16px 10px; font-size:13px; }
-.pix-card { border:2px solid var(--ink); box-shadow:6px 6px 0 var(--yellow); }
-.pix-card label { display:block; font-size:12px; font-weight:700; margin:18px 0 8px; }
-.pix-card select,.pix-card input { width:100%; min-height:44px; border:1px solid #454545; background:#151515; color:#fff; border-radius:10px; padding:10px; font:inherit; font-size:14px; }
-.pix-total { display:flex; flex-wrap:wrap; justify-content:space-between; gap:8px; margin-top:18px; align-items:center; }
-.pix-total span { font-size:13px; }.pix-total strong { font-size:24px; }
-.pix-card #copy-pix { margin-top:10px; }.pix-status { min-height:44px; font-size:12px!important; }
-@media(max-width:900px) { .payment-grid { grid-template-columns:1fr; }.payment-card { max-width:620px; width:100%; margin:auto; } }
-@media(max-width:680px) { .payment-section { padding:45px 5vw; }.payment-card { padding:22px; }.pack-payment-actions .buy-button { min-height:44px; font-size:11px; }.pack-payment-actions a { font-size:11px; } }
-.pack-whatsapp-button { color:#00d684; border-color:#00a66a; }
-.payment-number { color:#fff; }
-.pix-card { border-color:var(--yellow); }
-.payment-card .button.primary { background:#00ce7d; color:#031109; box-shadow:none; }
-.payment-card .button.primary:hover { background:#26e79b; }
+.delivery-store-status { color:#c5c2ca; font-size:12px; line-height:1.7; margin:0 0 24px; max-width:850px; }
+.delivery-access{margin:0 0 24px;font-size:13px}.delivery-access a{color:#20d674;text-decoration:underline;text-underline-offset:4px}
+.delivery-unavailable { opacity:.5; cursor:default; box-shadow:none!important; text-align:center; }
+.pack-support { display:inline-block; margin:12px 0 4px; color:var(--pink); font-size:11px; text-decoration:underline; text-underline-offset:4px; }
+.product-bottom .buy-button { min-width:0; gap:8px; font-size:12px; }
+.buy-reassurance { line-height:1.6; }
+@media(max-width:650px){.product-bottom .buy-button { width:100%; justify-content:center; }.product-bottom { gap:14px; }.site-header nav { display:none; }}
+.product-bottom{flex-direction:column;align-items:flex-start;gap:10px}
+.product-bottom .buy-button{width:100%;align-self:stretch;justify-content:center;white-space:normal;text-align:center;padding:10px 8px;line-height:1.4;min-height:40px;flex-wrap:wrap}
+@media(max-width:650px){.product-bottom .buy-button{font-size:10px;gap:5px}.pack-support{font-size:10px;line-height:1.6}}
