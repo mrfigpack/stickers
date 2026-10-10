@@ -1,10 +1,13 @@
+// Links próprios dos afiliados usam a mesma loja, sem alterar preços.
+const affiliatePath = location.pathname.replace(/\/index\.html$/, '/').match(/^\/stickers\/(thiago|lyana|helena)\/?$/);
+const storeAffiliate = affiliatePath ? affiliatePath[1] : null;
 const DELIVERY_ORIGIN = "https://srv2030058.hstgr.cloud";
 const DELIVERY_PRODUCTS = { "combo-completo": "combo", "respostas-impertinentes": "respostas", "proibido": "proibido", "musicas": "musicas", "animezando": "animezando", "politicando": "politicando", "cantadas": "cantadas" };
 let onlineProducts = new Map();
 let onlineLoaded = false;
 let onlineUnavailable = false;
 function deliveryReady(pack) { return onlineProducts.get(DELIVERY_PRODUCTS[pack.id])?.available === true; }
-function deliveryLink(pack) { return `${DELIVERY_ORIGIN}/?pack=${encodeURIComponent(onlineProducts.get(DELIVERY_PRODUCTS[pack.id])?.id || DELIVERY_PRODUCTS[pack.id])}`; }
+function deliveryLink(pack) { return `${DELIVERY_ORIGIN}/?pack=${encodeURIComponent(onlineProducts.get(DELIVERY_PRODUCTS[pack.id])?.id || DELIVERY_PRODUCTS[pack.id])}${storeAffiliate ? '&ref=' + encodeURIComponent(storeAffiliate) : ''}`; }
 function purchaseButton(pack, className = 'buy-button', label = 'Comprar e receber') {
   return deliveryReady(pack)
     ? `<a class="${className}" href="${deliveryLink(pack)}" rel="noopener">${label} <i class="bi bi-arrow-up-right" aria-hidden="true"></i></a>`
