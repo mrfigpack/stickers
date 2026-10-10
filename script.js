@@ -511,3 +511,15 @@ if (feedbackToast) {
 }
 
 loadDeliveryCatalog();
+
+// Contagem de visitas: identificadores aleatórios, sem email, nome ou IP.
+(async()=>{
+  if(navigator.globalPrivacyControl===true||navigator.doNotTrack==='1')return;
+  try{
+    const uuid=/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+    let visitorId=localStorage.getItem('figpack-visitor');if(!uuid.test(visitorId||'')){visitorId=crypto.randomUUID();localStorage.setItem('figpack-visitor',visitorId);}
+    let session;try{session=JSON.parse(localStorage.getItem('figpack-visit')||'null');}catch{}
+    const now=Date.now();if(!session||!uuid.test(session.id||'')||!Number.isFinite(session.at)||now-session.at>=1800000||session.at>now){session={id:crypto.randomUUID(),at:now};localStorage.setItem('figpack-visit',JSON.stringify(session));}
+    await fetch(DELIVERY_ORIGIN+'/api/visit',{method:'POST',headers:{'Content-Type':'text/plain'},credentials:'omit',keepalive:true,body:JSON.stringify({visitorId,visitId:session.id}),signal:AbortSignal.timeout(5000)});
+  }catch{ /* A contagem nunca impede a compra. */ }
+})();
