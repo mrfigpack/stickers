@@ -1,6 +1,7 @@
 // Links próprios dos afiliados usam a mesma loja, sem alterar preços.
-const affiliatePath = location.pathname.replace(/\/index\.html$/, '/').match(/^\/stickers\/(thiago|lyana|helena|jean)\/?$/);
-const storeAffiliate = affiliatePath ? affiliatePath[1] : null;
+const affiliatePath = location.pathname.replace(/\/index\.html$/, '/').match(/^\/stickers\/([a-z][a-z0-9-]{1,39})\/?$/);
+const affiliateQuery=new URLSearchParams(location.search||'').get('ref');
+const storeAffiliate = /^[a-z][a-z0-9-]{1,39}$/.test(affiliateQuery||'')?affiliateQuery:affiliatePath?affiliatePath[1]:null;
 const DELIVERY_ORIGIN = "https://srv2030058.hstgr.cloud";
 const DELIVERY_PRODUCTS = { "combo-completo": "combo", "respostas-impertinentes": "respostas", "proibido": "proibido", "musicas": "musicas", "animezando": "animezando", "politicando": "politicando", "cantadas": "cantadas" };
 let onlineProducts = new Map();
