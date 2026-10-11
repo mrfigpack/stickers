@@ -1372,3 +1372,5 @@ footer { border-top-color:rgba(255,51,76,.3); }
 .product-bottom{flex-direction:column;align-items:flex-start;gap:10px}
 .product-bottom .buy-button{width:100%;align-self:stretch;justify-content:center;white-space:normal;text-align:center;padding:10px 8px;line-height:1.4;min-height:40px;flex-wrap:wrap}
 @media(max-width:650px){.product-bottom .buy-button{font-size:10px;gap:5px}.pack-support{font-size:10px;line-height:1.6}}
+
+.purchase-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;width:100%}.purchase-options .buy-button,.purchase-options .button,.purchase-options .whatsapp-option{min-width:0;width:100%;min-height:52px;padding:9px 7px;font-size:11px;line-height:1.3;white-space:normal;text-align:center;display:flex;align-items:center;justify-content:center;flex-wrap:wrap;border-radius:18px}.purchase-options .whatsapp-option{background:#101510;color:#9ee8b5;border:1px solid #20a75e;font-weight:800;text-decoration:none}

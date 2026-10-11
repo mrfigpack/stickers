@@ -8,11 +8,13 @@ let onlineLoaded = false;
 let onlineUnavailable = false;
 function deliveryReady(pack) { return onlineProducts.get(DELIVERY_PRODUCTS[pack.id])?.available === true; }
 function deliveryLink(pack) { return `${DELIVERY_ORIGIN}/?pack=${encodeURIComponent(onlineProducts.get(DELIVERY_PRODUCTS[pack.id])?.id || DELIVERY_PRODUCTS[pack.id])}${storeAffiliate ? '&ref=' + encodeURIComponent(storeAffiliate) : ''}`; }
-function purchaseButton(pack, className = 'buy-button', label = 'Comprar e receber') {
-  return deliveryReady(pack)
-    ? `<a class="${className}" href="${deliveryLink(pack)}" rel="noopener">${label} <i class="bi bi-arrow-up-right" aria-hidden="true"></i></a>`
+function purchaseButton(pack, className = 'buy-button', label = 'Comprar') {
+  const purchase = deliveryReady(pack)
+    ? `<a class="${className}" href="${deliveryLink(pack)}" rel="noopener">Comprar <i class="bi bi-arrow-up-right" aria-hidden="true"></i></a>`
     : `<span class="${className} delivery-unavailable" aria-disabled="true">${!onlineLoaded ? 'Carregando...' : onlineUnavailable ? 'Indisponível agora' : 'Em preparação'}</span>`;
+  return `<div class="purchase-options">${purchase}<a class="whatsapp-option" href="${supportLink(pack)}" target="_blank" rel="noopener noreferrer">Atendimento via WhatsApp</a></div>`;
 }
+
 function supportLink(pack) { return 'https://wa.me/558892910298?text=' + encodeURIComponent('Olá! Preciso de ajuda com o pack ' + pack.name + '.'); }
 async function loadDeliveryCatalog() {
   try {
@@ -285,7 +287,7 @@ function renderCatalog() {
           ${purchaseButton(pack)}
         </div>
         <small class="buy-reassurance"><i class="bi bi-shield-check" aria-hidden="true"></i> ${deliveryReady(pack) ? "Pix ou cartão &middot; entrega na página" : "Entrega online em preparação"}</small>
-        <a class="pack-support" href="${supportLink(pack)}" target="_blank" rel="noopener noreferrer">Preciso de ajuda no WhatsApp</a>
+
         <button class="details-link" type="button" data-pack-id="${pack.id}">Ver detalhes do pack <span aria-hidden="true"><i class="bi bi-chevron-down"></i></span></button>
       </div>
     </article>
