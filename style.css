@@ -1383,3 +1383,5 @@ footer { border-top-color:rgba(255,51,76,.3); }
 .product-card .purchase-options .buy-button{white-space:nowrap;gap:7px}
 .product-card .purchase-options .buy-button i{flex:0 0 auto}
 .product-card .purchase-options .whatsapp-option{white-space:normal;overflow-wrap:normal;word-break:normal}
+
+.affiliate-application-dialog .application-age-label{display:flex;align-items:flex-start;gap:10px;font-size:13px;line-height:1.5;margin:18px 0}.affiliate-application-dialog .application-age-label input{width:18px;height:18px;flex:0 0 18px;margin:1px 0 0;padding:0;accent-color:#ff3858}
