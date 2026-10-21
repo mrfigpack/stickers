@@ -3,8 +3,8 @@ const affiliatePath = location.pathname.replace(/\/index\.html$/, '/').match(/^\
 const affiliateQuery=new URLSearchParams(location.search||'').get('ref');
 const storeAffiliate = /^[a-z][a-z0-9-]{1,39}$/.test(affiliateQuery||'')?affiliateQuery:affiliatePath&&!['insta','tiktok'].includes(affiliatePath[1])?affiliatePath[1]:null;
 const sourcePath=location.pathname.replace(/\/index\.html$/, '/').match(/^\/stickers\/(insta|tiktok)\/?$/);
-let storeSource=sourcePath?(sourcePath[1]==='insta'?'instagram':'tiktok'):undefined;
-try{const saved=JSON.parse(localStorage.getItem('figpack-origin')||'null');if(!storeSource&&saved&&['instagram','tiktok'].includes(saved.source)&&Number.isFinite(saved.at)&&Date.now()-saved.at>=0&&Date.now()-saved.at<1800000)storeSource=saved.source;if(sourcePath)localStorage.setItem('figpack-origin',JSON.stringify({source:storeSource,at:Date.now()}));}catch{}
+let storeSource=storeAffiliate?'instagram':sourcePath?(sourcePath[1]==='insta'?'instagram':'tiktok'):undefined;
+try{const saved=JSON.parse(localStorage.getItem('figpack-origin')||'null');if(!storeSource&&saved&&['instagram','tiktok'].includes(saved.source)&&Number.isFinite(saved.at)&&Date.now()-saved.at>=0&&Date.now()-saved.at<1800000)storeSource=saved.source;if(sourcePath||storeAffiliate)localStorage.setItem('figpack-origin',JSON.stringify({source:storeSource,at:Date.now()}));}catch{}
 const DELIVERY_ORIGIN = "https://srv2030058.hstgr.cloud";
 const DELIVERY_PRODUCTS = { "combo-completo": "combo", "respostas-impertinentes": "respostas", "proibido": "proibido", "musicas": "musicas", "animezando": "animezando", "politicando": "politicando", "cantadas": "cantadas" };
 let onlineProducts = new Map();
