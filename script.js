@@ -1,14 +1,17 @@
 // Links próprios dos afiliados usam a mesma loja, sem alterar preços.
 const affiliatePath = location.pathname.replace(/\/index\.html$/, '/').match(/^\/stickers\/([a-z][a-z0-9-]{1,39})\/?$/);
 const affiliateQuery=new URLSearchParams(location.search||'').get('ref');
-const storeAffiliate = /^[a-z][a-z0-9-]{1,39}$/.test(affiliateQuery||'')?affiliateQuery:affiliatePath?affiliatePath[1]:null;
+const storeAffiliate = /^[a-z][a-z0-9-]{1,39}$/.test(affiliateQuery||'')?affiliateQuery:affiliatePath&&!['insta','tiktok'].includes(affiliatePath[1])?affiliatePath[1]:null;
+const sourcePath=location.pathname.replace(/\/index\.html$/, '/').match(/^\/stickers\/(insta|tiktok)\/?$/);
+let storeSource=sourcePath?(sourcePath[1]==='insta'?'instagram':'tiktok'):undefined;
+try{const saved=JSON.parse(localStorage.getItem('figpack-origin')||'null');if(!storeSource&&saved&&['instagram','tiktok'].includes(saved.source)&&Number.isFinite(saved.at)&&Date.now()-saved.at>=0&&Date.now()-saved.at<1800000)storeSource=saved.source;if(sourcePath)localStorage.setItem('figpack-origin',JSON.stringify({source:storeSource,at:Date.now()}));}catch{}
 const DELIVERY_ORIGIN = "https://srv2030058.hstgr.cloud";
 const DELIVERY_PRODUCTS = { "combo-completo": "combo", "respostas-impertinentes": "respostas", "proibido": "proibido", "musicas": "musicas", "animezando": "animezando", "politicando": "politicando", "cantadas": "cantadas" };
 let onlineProducts = new Map();
 let onlineLoaded = false;
 let onlineUnavailable = false;
 function deliveryReady(pack) { return onlineProducts.get(DELIVERY_PRODUCTS[pack.id])?.available === true; }
-function deliveryLink(pack) { return `${DELIVERY_ORIGIN}/?pack=${encodeURIComponent(onlineProducts.get(DELIVERY_PRODUCTS[pack.id])?.id || DELIVERY_PRODUCTS[pack.id])}${storeAffiliate ? '&ref=' + encodeURIComponent(storeAffiliate) : ''}`; }
+function deliveryLink(pack) { return `${DELIVERY_ORIGIN}/?pack=${encodeURIComponent(onlineProducts.get(DELIVERY_PRODUCTS[pack.id])?.id || DELIVERY_PRODUCTS[pack.id])}${storeAffiliate ? '&ref=' + encodeURIComponent(storeAffiliate) : ''}${storeSource ? '&origem='+storeSource : ''}`; }
 function purchaseButton(pack, className = 'buy-button', label = 'Comprar') {
   const purchase = deliveryReady(pack)
     ? `<a class="${className}" href="${deliveryLink(pack)}" rel="noopener">Comprar <i class="bi bi-arrow-up-right" aria-hidden="true"></i></a>`
@@ -525,7 +528,7 @@ loadDeliveryCatalog();
     const uuid=/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
     let visitorId=localStorage.getItem('figpack-visitor');if(!uuid.test(visitorId||'')){visitorId=crypto.randomUUID();localStorage.setItem('figpack-visitor',visitorId);}
     let session;try{session=JSON.parse(localStorage.getItem('figpack-visit')||'null');}catch{}
-    const now=Date.now();if(!session||!uuid.test(session.id||'')||!Number.isFinite(session.at)||now-session.at>=1800000||session.at>now){session={id:crypto.randomUUID(),at:now};localStorage.setItem('figpack-visit',JSON.stringify(session));}
-    await fetch(DELIVERY_ORIGIN+'/api/visit',{method:'POST',headers:{'Content-Type':'text/plain'},credentials:'omit',keepalive:true,body:JSON.stringify({visitorId,visitId:session.id}),signal:AbortSignal.timeout(5000)});
+    const now=Date.now();if(!session||!uuid.test(session.id||'')||!Number.isFinite(session.at)||now-session.at>=1800000||session.at>now||session.source!==storeSource){session={id:crypto.randomUUID(),at:now,...(storeSource?{source:storeSource}:{})};localStorage.setItem('figpack-visit',JSON.stringify(session));}
+    await fetch(DELIVERY_ORIGIN+'/api/visit',{method:'POST',headers:{'Content-Type':'text/plain'},credentials:'omit',keepalive:true,body:JSON.stringify({visitorId,visitId:session.id,...(storeSource?{source:storeSource}:{})}),signal:AbortSignal.timeout(5000)});
   }catch{ /* A contagem nunca impede a compra. */ }
 })();
