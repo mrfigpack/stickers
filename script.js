@@ -19,7 +19,13 @@ function purchaseButton(pack, className = 'buy-button', label = 'Comprar') {
   return `<div class="purchase-options">${purchase}<a class="whatsapp-option" href="${supportLink(pack)}" target="_blank" rel="noopener noreferrer">Atendimento via WhatsApp</a></div>`;
 }
 
-function supportLink(pack) { return 'https://wa.me/558892910298?text=' + encodeURIComponent('Olá! Gostaria de saber sobre os packs'); }
+function supportLink(pack) {
+  const isHelenaPage = /^\/stickers\/helena\/?$/.test(location.pathname);
+  const message = isHelenaPage
+    ? 'Olá, Guilherme! Quero saber mais sobre os packs'
+    : 'Olá! Gostaria de saber sobre os packs';
+  return 'https://wa.me/558892910298?text=' + encodeURIComponent(message);
+}
 async function loadDeliveryCatalog() {
   try {
     const response = await fetch(DELIVERY_ORIGIN + '/api/catalog', { cache: 'no-store', signal: AbortSignal.timeout(10000) });
