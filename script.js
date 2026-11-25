@@ -1,10 +1,10 @@
 // Links próprios dos afiliados usam a mesma loja, sem alterar preços.
 const affiliatePath = location.pathname.replace(/\/index\.html$/, '/').match(/^\/stickers\/([a-z][a-z0-9-]{1,39})\/?$/);
 const affiliateQuery=new URLSearchParams(location.search||'').get('ref');
-const storeAffiliate = /^[a-z][a-z0-9-]{1,39}$/.test(affiliateQuery||'')?affiliateQuery:affiliatePath&&!['insta','tiktok'].includes(affiliatePath[1])?affiliatePath[1]:null;
-const sourcePath=location.pathname.replace(/\/index\.html$/, '/').match(/^\/stickers\/(insta|tiktok)\/?$/);
-let storeSource=storeAffiliate?'instagram':sourcePath?(sourcePath[1]==='insta'?'instagram':'tiktok'):undefined;
-try{const saved=JSON.parse(localStorage.getItem('figpack-origin')||'null');if(!storeSource&&saved&&['instagram','tiktok'].includes(saved.source)&&Number.isFinite(saved.at)&&Date.now()-saved.at>=0&&Date.now()-saved.at<1800000)storeSource=saved.source;if(sourcePath||storeAffiliate)localStorage.setItem('figpack-origin',JSON.stringify({source:storeSource,at:Date.now()}));}catch{}
+const storeAffiliate = /^[a-z][a-z0-9-]{1,39}$/.test(affiliateQuery||'')?affiliateQuery:affiliatePath&&!['insta','tiktok','facebook'].includes(affiliatePath[1])?affiliatePath[1]:null;
+const sourcePath=location.pathname.replace(/\/index\.html$/, '/').match(/^\/stickers\/(insta|tiktok|facebook)\/?$/);
+let storeSource=storeAffiliate?'instagram':sourcePath?(sourcePath[1]==='insta'?'instagram':sourcePath[1]):undefined;
+try{const saved=JSON.parse(localStorage.getItem('figpack-origin')||'null');if(!storeSource&&saved&&['instagram','tiktok','facebook'].includes(saved.source)&&Number.isFinite(saved.at)&&Date.now()-saved.at>=0&&Date.now()-saved.at<1800000)storeSource=saved.source;if(sourcePath||storeAffiliate)localStorage.setItem('figpack-origin',JSON.stringify({source:storeSource,at:Date.now()}));}catch{}
 const DELIVERY_ORIGIN = "https://srv2030058.hstgr.cloud";
 const DELIVERY_PRODUCTS = { "combo-completo": "combo", "respostas-impertinentes": "respostas", "proibido": "proibido", "musicas": "musicas", "animezando": "animezando", "politicando": "politicando", "cantadas": "cantadas" };
 let onlineProducts = new Map();
@@ -19,13 +19,7 @@ function purchaseButton(pack, className = 'buy-button', label = 'Comprar') {
   return `<div class="purchase-options">${purchase}<a class="whatsapp-option" href="${supportLink(pack)}" target="_blank" rel="noopener noreferrer">Atendimento via WhatsApp</a></div>`;
 }
 
-function supportLink(pack) {
-  const isHelenaPage = /^\/stickers\/helena\/?$/.test(location.pathname);
-  const message = isHelenaPage
-    ? 'Olá, Guilherme! Quero saber mais sobre os packs'
-    : 'Olá! Gostaria de saber sobre os packs';
-  return 'https://wa.me/558892910298?text=' + encodeURIComponent(message);
-}
+function supportLink(pack) { return 'https://wa.me/558892910298?text=' + encodeURIComponent('Olá! Gostaria de saber sobre os packs'); }
 async function loadDeliveryCatalog() {
   try {
     const response = await fetch(DELIVERY_ORIGIN + '/api/catalog', { cache: 'no-store', signal: AbortSignal.timeout(10000) });
